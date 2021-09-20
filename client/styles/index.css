@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+}
+
+#container {
+  height: 100vh;
+}
+
+#three {
+  width: 100%;
+  height: 90vh;
+}

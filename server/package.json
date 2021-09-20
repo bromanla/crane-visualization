@@ -1,0 +1,11 @@
+{
+  "name": "crane-visualization",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "author": "Roman <bromanla.json@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^9.2.1"
+  }
+}

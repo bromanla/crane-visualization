@@ -1,32 +1,38 @@
+#define COUNT_JOINTS 3
+#define DEGREES_JOINTS 180
+
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
-  byte test[] = {
-    map(random(0, 128), 0, 1024, 0, 180),
-    map(random(0, 128), 0, 1024, 0, 180),
-    map(random(0, 128), 0, 1024, 0, 180),
-  };
+  static unsigned long timer = millis();
 
-  broadcast(test, sizeof(test));
+  if (millis() - timer <= 1000)
+    return false;
+
+  timer = millis();
+
+  byte data[COUNT_JOINTS];
+  mockAnanlogRead(data);
+  comBroadcast(data);
+}
+
+void mockAnanlogRead (byte *mock) {
+  for(int i = 0; i < COUNT_JOINTS; i++) {
+    mock[i] = random(0, 180);
+  }
 }
 
 // формирование сообщения и передача по COM порту
-void broadcast (byte *req, byte reqSize) {
-  static unsigned long timer = millis();
-
-  if (millis() - timer <= 200)
-    return;
-
-  timer = millis();
+void comBroadcast (byte *req) {
   char res[] = "";
 
-  // sizeof Byte array = lenght array
-  for (byte i = 0; i < reqSize; i++) {
+  for (byte i = 0; i < COUNT_JOINTS; i++) {
     itoa(req[i], strchr(res, NULL), DEC);
-    strcat(res, i == reqSize - 1 ? ";" : ",");
+    if (i != COUNT_JOINTS - 1)
+      strcat(res, ",");
   }
 
-  Serial.print(res);
+  Serial.println(res);
 }

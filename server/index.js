@@ -1,22 +1,37 @@
+import config from './src/config.js'
 import SerialPort from 'serialport'
+import ReadLine from '@serialport/parser-readline'
 
-// console.log(await SerialPort.list())
-
-const port = new SerialPort('COM3', {
+const port = new SerialPort(config.serialport, {
   baudRate: 9600,
   autoOpen: false
 })
 
-port.open((err) => {
-  if (err)
-    return console.log(`Error opening port: ${err.message}`)
+const parser = port.pipe(
+  new ReadLine({
+    delimiter: '\r\n'
+  })
+)
+
+port.open(async (err) => {
+  if (err) {
+    const ports = await SerialPort.list()
+
+    const message = ports.reduce(
+      (acc, port, index) => acc + `\n${++index}. ${port.path}`,
+      'Available ports:'
+    )
+
+    console.log(`Error opening port: ${err.message}`)
+    console.log(message)
+  }
 })
 
-let timer = new Date().getTime()
+parser.on('data', (data) => {
+  const degrees = data
+    .toString()
+    .split(',')
+    .map(el => Number(el))
 
-port.on('data', function (data) {
-  console.log(new Date().getTime() - timer)
-  timer = new Date().getTime()
-
-  console.log('Data:', data.toString())
+  config.debug && console.log(degrees)
 })

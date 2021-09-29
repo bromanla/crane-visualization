@@ -27,11 +27,37 @@ port.open(async (err) => {
   }
 })
 
+let healthTimer;
+let fatalTimer;
+
 parser.on('data', (data) => {
-  const degrees = data
-    .toString()
+  const req = data.toString()
+
+  if (req === 'ok') {
+    // clearTimeout(fatalTimer)
+    // return console.log('Связь с ардуино есть')
+  }
+
+  const degrees = req
     .split(',')
     .map(el => Number(el))
 
   config.debug && console.log(degrees)
+
+  // Запускаем таймер на 10 секунд, если ответа нет, то крашим
+  // clearTimeout(healthTimer)
+  // healthTimer = setTimeout(() => {
+  //   console.log('health')
+  //   port.write('0')
+
+  //   fatalTimer = setTimeout(() => {
+  //     throw 'Аруино не отвечает!'
+  //   }, 1000)
+  // }, 5000);
 })
+
+port.on('error', (err) => {
+  console.log(err)
+})
+
+// Function reopen port

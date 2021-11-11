@@ -8,7 +8,7 @@ export default class {
     this.path = path
   }
 
-  async open() {
+  open() {
     const port = new SerialPort(this.path, {
       baudRate: 9600,
       autoOpen: false
@@ -20,9 +20,7 @@ export default class {
       })
     )
 
-    parser.on('data', (data) => this.onData(data))
-    port.on('close', () => this.onClose())
-    port.on('error', (e) => this.onError(e))
+    port.on('close', this.onClose.bind(this))
 
     this.port = port
     this.parser = parser
@@ -32,7 +30,7 @@ export default class {
         console.log(`Error opening port: ${err.message}`)
         console.log('Attempt to reconnect after 5 seconds')
         await setTimeout(5000)
-        await this.open()
+        this.open()
       }
       else {
         config.debug && console.log('Port open!')
@@ -45,25 +43,9 @@ export default class {
     await this.open()
   }
 
-  async onError (e) {
-    console.log(`on error`)
+  on (event, callback) {
+    return this.parser.on(event, callback)
   }
-
-  onData (data) {
-    const req = data.toString()
-
-    const degrees = req
-      .split(',')
-      .map(el => Number(el))
-
-    config.debug && console.log(degrees)
-  }
-
 }
 
-// const ports = await SerialPort.list()
-
-// const message = ports.reduce(
-//   (acc, port, index) => acc + `\n${++index}. ${port.path}`,
-//   'Available ports:'
-// )
+// TODO: собственный Eventhandler

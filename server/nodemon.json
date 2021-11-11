@@ -1,0 +1,8 @@
+{
+  "restartable": "rs",
+  "verbose": false,
+  "events": {
+    "start": "node -e console.clear()"
+  },
+  "ext": ".js, .mjs, .json, .yaml, .yml, .ts"
+}

@@ -12,15 +12,13 @@ renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
 
 threeContainer.appendChild(renderer.domElement)
 
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: '#f5f5f5' });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+camera.position.set(2, 2, 2)
 
-camera.position.z = 5;
-
+// Контроллер передвижения
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.update()
+controls.enableDamping = true
+controls.minDistance = 1
 
 window.addEventListener('resize', () => {
   camera.aspect = threeContainer.offsetWidth / threeContainer.offsetHeight
@@ -28,12 +26,22 @@ window.addEventListener('resize', () => {
   renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight)
 })
 
-// const light = new THREE.AmbientLight('#FF0017');
-// scene.add(light);
+// Floor
+const geometry = new THREE.PlaneGeometry(10, 10);
+const material = new THREE.MeshBasicMaterial( {color: '#1597E5', side: THREE.DoubleSide} );
+const plane = new THREE.Mesh(geometry, material);
 
-// let light2 = new THREE.PointLight('#FF0017');
-// light2.position.set(0, 200, 200);
-// scene.add(light2)
+plane.rotateX( Math.PI / 2 );
+scene.add(plane);
+
+// Загрузка модели
+const loader = new GLTFLoader()
+
+loader.load('../shiba/scene.gltf', (gltf) => {
+  gltf.scene.position.set(0, 1.005, 0)
+  console.log(gltf.scene)
+  scene.add(gltf.scene);
+})
 
 const animate = function () {
   requestAnimationFrame(animate);

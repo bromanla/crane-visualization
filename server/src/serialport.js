@@ -1,11 +1,14 @@
 import config from './config.js'
 import SerialPort from 'serialport'
 import ReadLine from '@serialport/parser-readline'
+import EventEmitter from 'events'
 import { setTimeout } from 'timers/promises'
 
 export default class {
   constructor (path) {
     this.path = path
+    this.emitter = new EventEmitter()
+    this.open()
   }
 
   open() {
@@ -20,7 +23,8 @@ export default class {
       })
     )
 
-    port.on('close', this.onClose.bind(this))
+    parser.on('data', this.data.bind(this))
+    port.on('close', this.close.bind(this))
 
     this.port = port
     this.parser = parser
@@ -38,14 +42,21 @@ export default class {
     })
   }
 
-  async onClose () {
+  close () {
     config.debug && console.log('Connection lost. Attempt to reconnect')
-    await this.open()
+    this.open()
+  }
+
+  data (data) {
+    const degrees = data
+      .split(',')
+      .map(el => Number(el))
+
+    if (degrees.length === 3 && degrees.every(el => !isNaN(el)))
+      this.emitter.emit('data', degrees)
   }
 
   on (event, callback) {
-    return this.parser.on(event, callback)
+    return this.emitter.on(event, callback)
   }
 }
-
-// TODO: собственный Eventhandler

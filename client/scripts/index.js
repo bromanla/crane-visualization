@@ -5,18 +5,16 @@ import { GLTFLoader } from './GLTFLoader.js'
 // Инициализируем Three JS
 const threeContainer = document.querySelector('#three')
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 1000);
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(75, threeContainer.offsetWidth / threeContainer.offsetHeight, 0.1, 1000)
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
 
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight);
-
+renderer.setSize(threeContainer.offsetWidth, threeContainer.offsetHeight)
 threeContainer.appendChild(renderer.domElement)
-
 camera.position.set(10, 10, 10)
 
 // Контроллер передвижения
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement)
 controls.update()
 // Плавная прокрутка
 // controls.enableDamping = true
@@ -42,7 +40,7 @@ scene.add(plane);
 //   scene.add(gltf.scene);
 // })
 
-const animate = function () {
+const animate = () => {
   requestAnimationFrame(animate);
   controls.update()
   renderer.render(scene, camera);

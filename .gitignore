@@ -1,8 +1,5 @@
 node_modules
 
-# Local env files
-.env
-
 # Editor directories and files
 .idea
 .vscode

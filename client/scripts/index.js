@@ -1,9 +1,6 @@
 import * as THREE from './three.js'
 import { OrbitControls } from './orbitControls.js'
-import { GLTFLoader } from './GLTFLoader.js'
 import * as TWEEN from './tween.esm.js'
-
-console.log(TWEEN)
 
 // Инициализируем Three JS
 const threeContainer = document.querySelector('#three')
@@ -62,44 +59,33 @@ midMesh.add(lastMesh)
 
 scene.add(mainMesh)
 
-function smoothMovement (mesh, current) {
-  const amimations = new TWEEN.Tween({ deg: radToDeg(mesh.rotation.z) })
-    .to({ deg: current }, 200 )
-    .easing(TWEEN.Easing.Quadratic.InOut)
+let animationTmp = []
 
-  const update = (el) => mesh.rotation.z = degToRad(el.deg);
-  amimations.onUpdate(update)
-  amimations.start()
+function smoothMovement (meshs) {
+  animationTmp.forEach(anim => anim.stop())
+  animationTmp = [];
+
+  meshs.forEach(({mesh, deg}) => {
+    const amimations = new TWEEN.Tween({ deg: radToDeg(mesh.rotation.z) })
+      .to({ deg }, 200 )
+
+    const update = (el) => mesh.rotation.z = degToRad(el.deg);
+    amimations.onUpdate(update)
+    amimations.start()
+    animationTmp.push(amimations)
+  })
 }
 
-// const anim1 = new TWEEN.Tween({ rotZ: 0})
-//   .to({ rotZ: degToRad(180) }, 100)
-//   .easing(TWEEN.Easing.Quadratic.InOut)
+const socket = new WebSocket('ws://localhost:8080');
 
-// const updateAnum = function (object, elapsed) {
-//   mainMesh.rotation.z = object.rotZ;
-// }
-
-// anim1.onUpdate(updateAnum)
-// anim1.start()
-
-let socket = new WebSocket('ws://localhost:8080');
 socket.onmessage = (e) => {
   const [main, mid, last] = JSON.parse(e.data)
 
-  smoothMovement(mainMesh, main);
-  smoothMovement(midMesh, mid)
-  smoothMovement(lastMesh, last)
-
-  // console.log(main, mid, last)
-
-  // smoothMovement(mainMesh.rotation.z, main)
-
-  // mainMesh.rotation.z = degToRad(main);
-  // midMesh.rotation.z = degToRad(mid);
-  // lastMesh.rotation.z = degToRad(last);
-
-  // [tmpMain, tmpMid, tmpLast] = [main, mid, last];
+  smoothMovement([
+    { mesh: mainMesh, deg: main },
+    { mesh: midMesh, deg: mid },
+    { mesh: lastMesh, deg: last }
+  ]);
 }
 
 const animate = () => {

@@ -6,8 +6,10 @@ if (error) {
   throw new Error('Couldn\'t find .env file')
 }
 
-export default {
+const LoggerInstance = {
   port: process.env.PORT,
   serialport: process.env.SERIALPORT,
-  debug: process.env.DEBUG === '1' ? true : false
+  debug: process.env.NODE_ENV !== 'production'
 }
+
+export default LoggerInstance

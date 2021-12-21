@@ -1,17 +1,18 @@
-import config from './src/config.js'
-import SerialPort from './src/serialport.js'
+import config from './config.js'
+import logger from './logger.js'
+import SerialPort from './serialport.js'
 import { WebSocketServer } from 'ws'
 
 const port = new SerialPort(config.serialport)
 const wss = new WebSocketServer({ port: config.port })
 
+port.open()
+
 wss.on('connection', () => {
-  console.log('Client connected!')
+  logger.info('Client connected!')
 })
 
 port.on('data', (data) => {
-  console.log(data)
-
   wss.clients.forEach((client) => {
     client.send(
       JSON.stringify(data)

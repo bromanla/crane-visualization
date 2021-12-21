@@ -5,7 +5,7 @@ import { WebSocketServer } from 'ws'
 const port = new SerialPort(config.serialport)
 const wss = new WebSocketServer({ port: config.port })
 
-wss.on('connection', (ws) => {
+wss.on('connection', () => {
   console.log('Client connected!')
 })
 

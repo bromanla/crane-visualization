@@ -5,6 +5,8 @@ import EventEmitter from 'events'
 import { setTimeout } from 'timers/promises'
 
 export default class {
+  cache = ''
+
   constructor (path) {
     this.path = path
     this.emitter = new EventEmitter()
@@ -52,8 +54,15 @@ export default class {
       .split(',')
       .map(el => Number(el))
 
-    if (degrees.length === 3 && degrees.every(el => !isNaN(el)))
+    if (this.cache === degrees.toString()) {
+      return console.log('Повторение')
+    }
+
+    if (degrees.length === 3 && degrees.every(el => !isNaN(el))) {
       this.emitter.emit('data', degrees)
+      this.cache = degrees.toString()
+    }
+
   }
 
   on (event, callback) {

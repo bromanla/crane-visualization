@@ -1,6 +1,6 @@
-import * as THREE from './three.js'
-import { OrbitControls } from './orbitControls.js'
-import * as TWEEN from './tween.esm.js'
+import * as THREE from './libs/three.js'
+import { OrbitControls } from './libs/orbitControls.js'
+import * as TWEEN from './libs/tween.js'
 
 // Инициализируем Three JS
 const threeContainer = document.querySelector('#three')
@@ -35,7 +35,7 @@ scene.add(plane);
 const degToRad = (deg) => deg * Math.PI / 180
 const radToDeg = (rad) => rad * 180 / Math.PI
 
-const mat = new THREE.MeshBasicMaterial({color:'#ff0000'});
+const mat = new THREE.MeshBasicMaterial({color:'#9D9D9D'});
 
 const mainHandGeometry = new THREE.BoxGeometry(2, 0.3, 0.3);
 const mainMesh = new THREE.Mesh(mainHandGeometry, mat);
@@ -50,11 +50,11 @@ mainHandGeometry.translate(1, 0, 0)
 mainMesh.rotateZ(degToRad(90))
 
 midHandGeometry.translate(1, 0, 0)
-midMesh.position.set(2.05, 0, 0);
+midMesh.position.set(2, 0, 0);
 mainMesh.add(midMesh)
 
 lastHandGeometry.translate(1, 0, 0)
-lastMesh.position.set(2.05, 0, 0)
+lastMesh.position.set(2, 0, 0)
 midMesh.add(lastMesh)
 
 scene.add(mainMesh)
@@ -79,13 +79,21 @@ function smoothMovement (meshs) {
 const socket = new WebSocket('ws://localhost:8080');
 
 socket.onmessage = (e) => {
-  const [main, mid, last] = JSON.parse(e.data)
+  const { event, data } = JSON.parse(e.data)
 
-  smoothMovement([
-    { mesh: mainMesh, deg: main },
-    { mesh: midMesh, deg: mid },
-    { mesh: lastMesh, deg: last }
-  ]);
+  if (event === 'ok') {
+    const [main, mid, last] = data
+
+    smoothMovement([
+      { mesh: mainMesh, deg: main },
+      { mesh: midMesh, deg: mid },
+      { mesh: lastMesh, deg: last }
+    ]);
+  }
+
+  if (event === 'close') {
+    console.log('Ya upal')
+  }
 }
 
 const animate = () => {

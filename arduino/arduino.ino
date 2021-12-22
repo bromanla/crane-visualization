@@ -3,6 +3,8 @@
 #define BROADCAST_DELAY 250 // задержка передачи
 #define DEBUG 0 // 0 - датчики, 1 - случайные данные
 
+byte data[COUNT_JOINTS];
+
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(128);
@@ -10,7 +12,6 @@ void setup() {
 
 void loop() {
   static unsigned long timer = millis();
-  byte data[COUNT_JOINTS];
   comHealth();
 
   if (millis() - timer >= BROADCAST_DELAY) {
@@ -46,7 +47,7 @@ void mockAnanlogRead (byte *mock) {
 
 // COM PORT DETERMINATOR \r\n
 void comBroadcast (byte *req) {
-  char res[] = "";
+  char res[11] = "";
 
   for (byte i = 0; i < COUNT_JOINTS; i++) {
     itoa(req[i], strchr(res, NULL), DEC);

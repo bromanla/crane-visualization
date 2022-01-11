@@ -15,11 +15,10 @@ camera.position.set(10, 10, 10)
 
 // Контроллер передвижения
 const controls = new OrbitControls(camera, renderer.domElement)
-controls.update()
-
+controls.minDistance = 1
 // Плавная прокрутка
 // controls.enableDamping = true
-controls.minDistance = 1
+controls.update()
 
 // Перерисовка canvas при изменении ширины окна
 window.addEventListener('resize', () => {
@@ -35,6 +34,7 @@ scene.add(plane);
 const degToRad = (deg) => deg * Math.PI / 180
 const radToDeg = (rad) => rad * 180 / Math.PI
 
+// Отрисовка устройства
 const mat = new THREE.MeshBasicMaterial({color:'#9D9D9D'});
 
 const mainHandGeometry = new THREE.BoxGeometry(2, 0.3, 0.3);
@@ -59,6 +59,7 @@ midMesh.add(lastMesh)
 
 scene.add(mainMesh)
 
+// Массив активных анимаций
 let animationTmp = []
 
 function smoothMovement (meshs) {
@@ -76,6 +77,7 @@ function smoothMovement (meshs) {
   })
 }
 
+// Взамодействие с сервером
 const socket = new WebSocket('ws://localhost:8080');
 
 socket.onmessage = (e) => {
@@ -92,7 +94,7 @@ socket.onmessage = (e) => {
   }
 
   if (event === 'close') {
-    console.log('Ya upal')
+    console.log('close')
   }
 }
 
